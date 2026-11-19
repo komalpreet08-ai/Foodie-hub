@@ -90,11 +90,7 @@ Foodie Hub features an end-to-end culinary experience: **Personal Star Ratings**
 
 Foodie Hub is built with vanilla JavaScript, modern CSS, and HTML5. No Node.js, build step, or server installation is required.
 
-Simply double-click or open `index.html` in your browser:
-
-```
-c:\Users\admin\OneDrive\Desktop\Foodie hub\index.html
-```
+Simply double-click or open `index.html` in your browser, or visit your deployed Vercel URL!
 
 Or open with VS Code Live Server / any web browser.
 
