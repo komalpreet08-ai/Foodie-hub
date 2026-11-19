@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Foodie Hub - Delicious Bites, Personal Rates & Foodie Photos</title>
+  <meta name="description" content="Order mouth-watering burgers, artisanal pizzas, authentic ramen, tacos, and decadent desserts. Rate dishes with your personal score and share food photos on Foodie Hub!" />
+  
+  <!-- Favicon -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🍔</text></svg>">
+  
+  <!-- Google Fonts: Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  
+  <!-- Stylesheets (Root and Subfolder Compatible) -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Site Header / Navbar -->
+  <header class="site-header">
+    <div class="container nav-container">
+      <div style="display: flex; align-items: center; gap: 1.5rem;">
+        <div class="brand-logo" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+          <div class="brand-icon">🍔</div>
+          <div class="brand-name">Foodie<span>Hub</span></div>
+        </div>
+
+        <!-- Delivery Location Selector -->
+        <button class="delivery-location-btn" id="deliveryLocationBtn" title="Change delivery location">
+          <span class="loc-pin">📍</span>
+          <div>
+            <span class="loc-label">DELIVER TO</span>
+            <span class="loc-value">Downtown, 5th Avenue ▾</span>
+          </div>
+        </button>
+      </div>
+
+      <!-- Navigation Links -->
+      <nav>
+        <ul class="nav-links">
+          <li><a href="#menuCatalog" class="active">Explore Menu</a></li>
+          <li><a href="#snapsSection">Foodie Snaps 📸</a></li>
+          <li><a href="#offersSection">Hot Deals 🔥</a></li>
+          <li><a href="#whyUsSection">Why Us</a></li>
+          <li><a href="#reviewsSection">Reviews</a></li>
+          <li><a href="#appDownloadSection">Get App</a></li>
+        </ul>
+      </nav>
+
+      <!-- Navigation Actions -->
+      <div class="nav-actions">
+        <!-- Personal User Profile Pill Button -->
+        <button class="nav-profile-pill" id="navProfileBtn" title="My Foodie Space & Personal Ratings">
+          <div class="nav-profile-avatar-wrap">
+            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&q=80" alt="My Profile Photo" id="navProfileAvatar" class="nav-profile-avatar" />
+          </div>
+          <div class="nav-profile-details">
+            <span class="nav-profile-name" id="navProfileName">Alex Morgan</span>
+            <span class="nav-profile-badge" id="navProfileRatedCount">2 rated</span>
+          </div>
+        </button>
+
+        <!-- Wishlist Button -->
+        <button class="nav-btn" id="favNavBtn" title="Saved Favorites" onclick="document.querySelector('[data-diet=bestseller]').click(); document.getElementById('menuCatalog').scrollIntoView({behavior:'smooth'});">
+          <span>❤️</span>
+          <span class="pill-counter" id="favCountBadge">0</span>
+        </button>
+
+        <!-- Cart Pill Button -->
+        <button class="cart-pill-btn" id="cartPillBtn" title="View Cart">
+          <span>🛒</span>
+          <span id="cartPillTotal">$0.00</span>
+          <span class="cart-count" id="cartBadgeCount">0</span>
+        </button>
+
+        <!-- Mobile Menu Toggle -->
+        <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Toggle Navigation">
+          ☰
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="container">
+      <div class="hero-grid">
+        <!-- Hero Text & Search -->
+        <div class="hero-content">
+          <div class="hero-badge-tag">
+            <span>⚡</span> Guaranteed 30-Minute Delivery or Free
+          </div>
+          <h1 class="hero-title">
+            Cravings Delivered in <span class="highlight">30 Minutes</span>, Hot & Fresh.
+          </h1>
+          <p class="hero-desc">
+            Explore 500+ chef-curated gourmet burgers, artisanal wood-fired pizzas, authentic Asian ramen bowls, and decadent sweets. Rate dishes with your personal score & upload your food snaps!
+          </p>
+
+          <!-- Search Bar with Instant Filter -->
+          <div class="hero-search-box">
+            <span style="font-size:1.2rem;color:var(--text-subtle);margin-left:0.25rem">🔍</span>
+            <input type="text" id="heroSearchInput" placeholder="What are you craving? (e.g. Truffle burger, Neapolitan pizza, ramen...)" />
+            <button class="hero-search-btn" id="heroSearchBtn">
+              <span>Find Food</span>
+              <span>➔</span>
+            </button>
+          </div>
+
+          <!-- Quick Search Chips -->
+          <div class="quick-search-chips">
+            <span class="quick-search-label">Popular Cravings:</span>
+            <button class="chip-btn" data-search="burger">🍔 Smash Burgers</button>
+            <button class="chip-btn" data-search="pizza">🍕 Hot Honey Pizza</button>
+            <button class="chip-btn" data-search="ramen">🍜 Tonkotsu Ramen</button>
+            <button class="chip-btn" data-search="birria">🌮 Birria Tacos</button>
+            <button class="chip-btn" data-search="tiramisu">🍰 Tiramisu</button>
+            <button class="chip-btn" data-search="boba">🧋 Brown Sugar Boba</button>
+          </div>
+        </div>
+
+        <!-- Hero Visual Showcase -->
+        <div class="hero-visual-wrapper">
+          <div class="hero-main-card">
+            <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1000&q=85" alt="Delicious Gourmet Feast" />
+            <div class="hero-card-gradient">
+              <span class="badge badge-primary" style="align-self:flex-start;margin-bottom:0.4rem">Chef's Signature Board</span>
+              <h3>Truffle & Smoked Meat Board</h3>
+              <p>Freshly charred Angus beef with hand-cut rosemary fries</p>
+            </div>
+          </div>
+
+          <!-- Floating Badges -->
+          <div class="floating-badge badge-1">
+            <div class="fb-icon orange">⚡</div>
+            <div class="fb-text">
+              <strong>24 Mins</strong>
+              <span>Fastest Delivery Avg</span>
+            </div>
+          </div>
+
+          <div class="floating-badge badge-2">
+            <div class="fb-icon green">🥗</div>
+            <div class="fb-text">
+              <strong>100% Fresh</strong>
+              <span>Organic Local Produce</span>
+            </div>
+          </div>
+
+          <div class="floating-badge badge-3">
+            <div class="fb-icon yellow">⭐</div>
+            <div class="fb-text">
+              <strong>4.9 / 5.0</strong>
+              <span>18,000+ Happy Foodies</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Trust Metrics Bar -->
+      <div class="trust-bar">
+        <div class="trust-item">
+          <div class="trust-icon">🚀</div>
+          <div>
+            <h4>30-Min Delivery</h4>
+            <p>Hot at your door, guaranteed</p>
+          </div>
+        </div>
+        <div class="trust-item">
+          <div class="trust-icon">⭐</div>
+          <div>
+            <h4>Personal Ratings</h4>
+            <p>Rate each dish & add tasting notes</p>
+          </div>
+        </div>
+        <div class="trust-item">
+          <div class="trust-icon">📸</div>
+          <div>
+            <h4>Foodie Snaps</h4>
+            <p>Share your food photos for coins</p>
+          </div>
+        </div>
+        <div class="trust-item">
+          <div class="trust-icon">💳</div>
+          <div>
+            <h4>Zero Hassle Refunds</h4>
+            <p>Instant support anytime</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Offers & Deals Section -->
+  <section class="offers-section" id="offersSection">
+    <div class="container">
+      <div class="section-header">
+        <div>
+          <div class="section-subtitle">Exclusive Daily Specials</div>
+          <h2 class="section-title">Save Big on Your Feast 🔥</h2>
+        </div>
+        <span class="badge badge-amber" style="font-size:0.85rem;padding:0.4rem 0.8rem">Click any code to copy!</span>
+      </div>
+
+      <div class="offers-grid">
+        <!-- Promo 1 -->
+        <div class="promo-card card-1">
+          <div>
+            <span class="promo-tag">New Foodie Welcome</span>
+            <h3>Flat 50% OFF</h3>
+            <p>Enjoy 50% discount up to $20 on your very first order with us!</p>
+          </div>
+          <div class="promo-footer">
+            <span class="code-pill">WELCOME50</span>
+            <button class="copy-code-btn" data-code="WELCOME50">Copy Code</button>
+          </div>
+        </div>
+
+        <!-- Promo 2 -->
+        <div class="promo-card card-2">
+          <div>
+            <span class="promo-tag">Free Shipping Day</span>
+            <h3>$0 Delivery Fee</h3>
+            <p>No minimum spend required. Valid on all restaurants today!</p>
+          </div>
+          <div class="promo-footer">
+            <span class="code-pill">FREEDEL</span>
+            <button class="copy-code-btn" data-code="FREEDEL">Copy Code</button>
+          </div>
+        </div>
+
+        <!-- Promo 3 -->
+        <div class="promo-card card-3">
+          <div>
+            <span class="promo-tag">Weekend Fiesta</span>
+            <h3>20% OFF Entire Cart</h3>
+            <p>Gather your friends & family and feast for less with unlimited savings.</p>
+          </div>
+          <div class="promo-footer">
+            <span class="code-pill">FOODIE20</span>
+            <button class="copy-code-btn" data-code="FOODIE20">Copy Code</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Menu Catalog Section -->
+  <section class="menu-section" id="menuCatalog">
+    <div class="container">
+      <div class="section-header">
+        <div>
+          <div class="section-subtitle">Handcrafted Gourmet Menu</div>
+          <h2 class="section-title">Explore Delicious Dishes 🍲</h2>
+        </div>
+        <button class="btn-personal-rate rated" onclick="window.FoodieHub.openProfileModal()" style="font-size:0.88rem;padding:0.5rem 1rem">
+          <span>⭐ My Rated Dishes</span>
+        </button>
+      </div>
+
+      <!-- Category Filter Pills -->
+      <div class="category-nav-bar" id="categoryNav">
+        <button class="cat-pill active" data-category="all">
+          <span>✨</span> All Delights <span class="cat-count">24</span>
+        </button>
+        <button class="cat-pill" data-category="burgers">
+          <span>🍔</span> Gourmet Burgers <span class="cat-count">4</span>
+        </button>
+        <button class="cat-pill" data-category="pizza">
+          <span>🍕</span> Artisanal Pizza <span class="cat-count">4</span>
+        </button>
+        <button class="cat-pill" data-category="asian">
+          <span>🍜</span> Asian & Bowls <span class="cat-count">4</span>
+        </button>
+        <button class="cat-pill" data-category="mexican">
+          <span>🌮</span> Tacos & Mexican <span class="cat-count">3</span>
+        </button>
+        <button class="cat-pill" data-category="salads">
+          <span>🥗</span> Healthy Greens <span class="cat-count">3</span>
+        </button>
+        <button class="cat-pill" data-category="desserts">
+          <span>🍰</span> Desserts & Cakes <span class="cat-count">3</span>
+        </button>
+        <button class="cat-pill" data-category="drinks">
+          <span>🧋</span> Boba & Refreshments <span class="cat-count">3</span>
+        </button>
+      </div>
+
+      <!-- Filter Toolbar -->
+      <div class="filter-toolbar">
+        <div class="dietary-filters">
+          <button class="diet-btn active" data-diet="all">🍽️ All Items</button>
+          <button class="diet-btn" data-diet="veg">
+            <span class="diet-indicator veg" style="width:14px;height:14px"></span> Veg Only
+          </button>
+          <button class="diet-btn" data-diet="nonveg">
+            <span class="diet-indicator nonveg" style="width:14px;height:14px"></span> Non-Veg
+          </button>
+          <button class="diet-btn" data-diet="bestseller">🔥 Chef's Best Sellers</button>
+          <button class="diet-btn" data-diet="my-rated">⭐ My Rated Dishes</button>
+        </div>
+
+        <div class="sort-search-group">
+          <!-- Inline Search -->
+          <div class="inline-search-input">
+            <span class="inline-search-icon">🔍</span>
+            <input type="text" id="inlineSearchInput" placeholder="Filter dishes..." />
+          </div>
+
+          <!-- Sort Dropdown -->
+          <select class="sort-select" id="sortSelect">
+            <option value="recommended">⭐ Recommended</option>
+            <option value="rating">Top Rated (4.8+)</option>
+            <option value="price-asc">Price: Low to High</option>
+            <option value="price-desc">Price: High to Low</option>
+            <option value="time">⚡ Fastest Prep</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Dynamic Food Grid -->
+      <div class="food-grid" id="foodGrid">
+        <!-- Rendered by app.js -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Foodie Snaps & Photo Gallery Section -->
+  <section class="snaps-section" id="snapsSection">
+    <div class="container">
+      <div class="snaps-header-row">
+        <div>
+          <div class="section-subtitle">Real Bites • Personal Rates • Live Moments</div>
+          <h2 class="section-title">Foodie Snaps & Moments Gallery 📸</h2>
+          <p style="margin-top:0.35rem">See genuine photos taken by food lovers, check their personal score, or share your own bite to earn rewards!</p>
+        </div>
+        <button class="btn-upload-snap-hero" id="btnOpenSnapModal">
+          <span>📸</span>
+          <span>Upload Your Food Snap</span>
+        </button>
+      </div>
+
+      <!-- Snaps Filter Pills -->
+      <div class="snaps-filter-pills">
+        <button class="snap-filter-btn active" data-snap-filter="all">All Community Snaps</button>
+        <button class="snap-filter-btn" data-snap-filter="personal">📸 My Personal Snaps</button>
+        <button class="snap-filter-btn" data-snap-filter="top-rated">⭐ Top Rated (4.9+)</button>
+      </div>
+
+      <!-- Snaps Grid -->
+      <div class="snaps-grid" id="snapsGrid">
+        <!-- Populated dynamically by app.js -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Why Us Features Section -->
+  <section class="features-section" id="whyUsSection">
+    <div class="container">
+      <div style="text-align:center;max-width:680px;margin:0 auto 3.5rem">
+        <div class="section-subtitle">Why Foodies Love Us</div>
+        <h2 class="section-title">The Foodie Hub Promise</h2>
+        <p>We blend gourmet culinary craftsmanship with industry-leading fast logistics to guarantee that every meal arrives piping hot and delicious.</p>
+      </div>
+
+      <div class="features-grid">
+        <div class="feature-box">
+          <div class="feature-icon-circle">⚡</div>
+          <h4>Superfast Dispatch</h4>
+          <p>Orders are dispatched in under 12 minutes with temperature-controlled insulated smart bags.</p>
+        </div>
+
+        <div class="feature-box">
+          <div class="feature-icon-circle">⭐</div>
+          <h4>Personal Rate System</h4>
+          <p>Keep your personal food diary! Rate every meal, add flavor tags, and track your culinary journey.</p>
+        </div>
+
+        <div class="feature-box">
+          <div class="feature-icon-circle">📸</div>
+          <h4>Personal Photo Uploads</h4>
+          <p>Upload your own food photos and customize your personal foodie profile avatar anytime.</p>
+        </div>
+
+        <div class="feature-box">
+          <div class="feature-icon-circle">🎁</div>
+          <h4>Foodie Coin Rewards</h4>
+          <p>Earn +50 Foodie Coins for every photo uploaded and redeem them for free desserts and sides!</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Customer Testimonials / Reviews -->
+  <section class="reviews-section" id="reviewsSection" style="padding: 4.5rem 0; background: #FFF;">
+    <div class="container">
+      <div class="section-header">
+        <div>
+          <div class="section-subtitle">Real Foodie Stories</div>
+          <h2 class="section-title">What Our Community Says ⭐</h2>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.75rem;">
+        <div style="background:var(--bg-main);padding:1.75rem;border-radius:var(--radius-lg);border:1px solid var(--border-light)">
+          <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:1rem">
+            <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=120&q=80" alt="Sarah J." style="width:48px;height:48px;border-radius:50%;object-fit:cover" />
+            <div>
+              <div style="font-weight:700">Sarah Jenkins</div>
+              <div style="font-size:0.8rem;color:var(--text-muted)">Verified Foodie • Ordered 24 times</div>
+            </div>
+          </div>
+          <div style="color:#F59E0B;font-size:1rem;margin-bottom:0.5rem">★★★★★</div>
+          <p style="font-size:0.9rem;line-height:1.5">"The Truffle Mushroom Smash Burger arrived steaming hot! The cheese pull was unreal and delivery took only 22 minutes. Giving it my personal rate of 5.0!"</p>
+        </div>
+
+        <div style="background:var(--bg-main);padding:1.75rem;border-radius:var(--radius-lg);border:1px solid var(--border-light)">
+          <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:1rem">
+            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=120&q=80" alt="David K." style="width:48px;height:48px;border-radius:50%;object-fit:cover" />
+            <div>
+              <div style="font-weight:700">David Kumar</div>
+              <div style="font-size:0.8rem;color:var(--text-muted)">Gourmet Enthusiast • Ordered 42 times</div>
+            </div>
+          </div>
+          <div style="color:#F59E0B;font-size:1rem;margin-bottom:0.5rem">★★★★★</div>
+          <p style="font-size:0.9rem;line-height:1.5">"The Neapolitan Margherita pizza crust has authentic leopard spots and wood-fired flavor. You can tell they use top-grade San Marzano tomatoes and genuine buffalo mozzarella. 10/10!"</p>
+        </div>
+
+        <div style="background:var(--bg-main);padding:1.75rem;border-radius:var(--radius-lg);border:1px solid var(--border-light)">
+          <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:1rem">
+            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80" alt="Elena M." style="width:48px;height:48px;border-radius:50%;object-fit:cover" />
+            <div>
+              <div style="font-weight:700">Elena Rostova</div>
+              <div style="font-size:0.8rem;color:var(--text-muted)">Health & Fitness Coach • Ordered 18 times</div>
+            </div>
+          </div>
+          <div style="color:#F59E0B;font-size:1rem;margin-bottom:0.5rem">★★★★★</div>
+          <p style="font-size:0.9rem;line-height:1.5">"Their Salmon Avocado Poke bowl and Burrata Fig salad are absolute perfection. Crisp greens, generous portions of fresh fish, and clear calorie counts right on the card!"</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- App Download Banner -->
+  <section class="app-banner-section" id="appDownloadSection">
+    <div class="container">
+      <div class="app-banner-card">
+        <div class="app-banner-content">
+          <span class="badge badge-amber" style="margin-bottom:1rem">⚡ Order 2x Faster on Mobile</span>
+          <h2>Hungry? Download The Foodie Hub App</h2>
+          <p>Unlock mobile-only discounts, track your rider live in 3D maps, and earn double loyalty reward coins on every personal food rating.</p>
+
+          <div class="store-badges">
+            <div class="store-badge-btn" onclick="window.FoodieHub.showToast('Redirecting to Apple App Store... 🍏')">
+              <span style="font-size:1.8rem">🍏</span>
+              <div>
+                <span>Download on the</span>
+                <strong>Apple App Store</strong>
+              </div>
+            </div>
+            <div class="store-badge-btn" onclick="window.FoodieHub.showToast('Redirecting to Google Play Store... 🤖')">
+              <span style="font-size:1.8rem">🤖</span>
+              <div>
+                <span>GET IT ON</span>
+                <strong>Google Play</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="text-align:center;">
+          <img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80" alt="Foodie Hub App Experience" style="width:100%;max-width:340px;border-radius:24px;box-shadow:0 20px 40px rgba(0,0,0,0.4);border:4px solid rgba(255,255,255,0.15)" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Site Footer -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <div class="brand-logo" style="color:#FFF;margin-bottom:1rem">
+            <div class="brand-icon">🍔</div>
+            <div class="brand-name">Foodie<span style="color:var(--primary)">Hub</span></div>
+          </div>
+          <p style="color:#94A3B8;font-size:0.9rem;line-height:1.6;margin-bottom:1.5rem">
+            Foodie Hub is your ultimate culinary gateway. Bringing master chefs, artisan kitchens, personal food ratings, and mouth-watering photography directly to your screen.
+          </p>
+          <div style="display:flex;gap:0.75rem;font-size:1.2rem">
+            <span style="cursor:pointer" title="Instagram">📸</span>
+            <span style="cursor:pointer" title="Twitter / X">🐦</span>
+            <span style="cursor:pointer" title="Facebook">📘</span>
+            <span style="cursor:pointer" title="YouTube">📺</span>
+          </div>
+        </div>
+
+        <div class="footer-col">
+          <h5>Quick Menu</h5>
+          <ul>
+            <li><a href="#menuCatalog" onclick="document.querySelector('[data-category=burgers]').click()">Gourmet Burgers</a></li>
+            <li><a href="#menuCatalog" onclick="document.querySelector('[data-category=pizza]').click()">Wood-fired Pizzas</a></li>
+            <li><a href="#menuCatalog" onclick="document.querySelector('[data-category=asian]').click()">Asian Ramen & Bowls</a></li>
+            <li><a href="#menuCatalog" onclick="document.querySelector('[data-category=mexican]').click()">Birria Tacos & Nachos</a></li>
+            <li><a href="#menuCatalog" onclick="document.querySelector('[data-category=desserts]').click()">Molten Lava Cakes</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h5>Customer Care</h5>
+          <ul>
+            <li><a href="#" onclick="window.FoodieHub.showToast('Support Hotline: 1-800-FOODIE (24/7) 📞')">24/7 Help Center</a></li>
+            <li><a href="#" onclick="window.FoodieHub.showToast('Refund Guarantee: Instant refund within 5 mins! 🛡️')">Refund Guarantee</a></li>
+            <li><a href="#" onclick="window.FoodieHub.showToast('Driver Partner Signups are open! 🛵')">Become a Driver</a></li>
+            <li><a href="#" onclick="window.FoodieHub.showToast('Partner Kitchen Portal loading... 👨‍🍳')">Add Your Restaurant</a></li>
+            <li><a href="#">Privacy & Terms</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h5>Weekly Secret Deals</h5>
+          <p style="font-size:0.85rem;color:#94A3B8">Subscribe to receive exclusive 40% OFF weekend promo codes directly in your inbox.</p>
+          <div class="newsletter-box">
+            <input type="email" placeholder="Enter your email address" id="newsletterEmail" />
+            <button onclick="
+              const em = document.getElementById('newsletterEmail').value;
+              if (em && em.includes('@')) {
+                window.FoodieHub.showToast('Subscribed! Check your inbox for $10 voucher 🎁');
+                document.getElementById('newsletterEmail').value = '';
+              } else {
+                window.FoodieHub.showToast('Please enter a valid email address!');
+              }
+            ">Join</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <div>© 2026 Foodie Hub Inc. Savor every bite with love. All rights reserved.</div>
+        <div style="display:flex;gap:1.5rem">
+          <a href="#">Privacy Policy</a>
+          <a href="#">Terms of Service</a>
+          <a href="#">Security</a>
+          <a href="#">Cookie Settings</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Quick View / Customization Modal -->
+  <div class="modal-backdrop" id="quickViewBackdrop">
+    <div class="modal-content" id="quickViewContent">
+      <button class="modal-close-btn" id="quickViewCloseBtn" title="Close">✕</button>
+      <!-- Populated dynamically by app.js -->
+    </div>
+  </div>
+
+  <!-- Cart Slide-Over Drawer -->
+  <div class="cart-drawer-backdrop" id="cartDrawerBackdrop">
+    <div class="cart-drawer">
+      <div class="cart-header">
+        <h3><span>🛒</span> Your Delicious Order</h3>
+        <button class="cart-close-btn" id="cartCloseBtn" title="Close Cart">✕</button>
+      </div>
+
+      <!-- Free Delivery Progress Meter -->
+      <div class="free-delivery-banner">
+        <div class="delivery-meter-label" id="freeDeliveryMsg">
+          Add <strong>$45.00</strong> more to get <strong>FREE White-Glove Delivery!</strong>
+        </div>
+        <div class="delivery-progress-track">
+          <div class="delivery-progress-fill" id="freeDeliveryFill" style="width: 0%;"></div>
+        </div>
+      </div>
+
+      <!-- Cart Items List -->
+      <div class="cart-items-container" id="cartItemsList">
+        <!-- Rendered by app.js -->
+      </div>
+
+      <!-- Cart Footer & Bill Breakdown -->
+      <div class="cart-footer">
+        <!-- Promo Code Input -->
+        <div class="promo-input-row">
+          <input type="text" id="promoInput" placeholder="Enter Promo Code (e.g. WELCOME50)" />
+          <button class="btn-apply-promo" id="btnApplyPromo">Apply</button>
+        </div>
+
+        <div class="bill-rows">
+          <div class="bill-row">
+            <span>Item Subtotal</span>
+            <strong id="cartSubtotal">$0.00</strong>
+          </div>
+          <div class="bill-row">
+            <span>Delivery Fee</span>
+            <span id="cartDeliveryFee">$3.99</span>
+          </div>
+          <div class="bill-row">
+            <span>Estimated Taxes & Fees (8%)</span>
+            <span id="cartTax">$0.00</span>
+          </div>
+          <div class="bill-row discount-row" id="cartDiscountRow" style="display:none">
+            <span>Coupon Discount</span>
+            <span id="cartDiscountVal">- $0.00</span>
+          </div>
+          <div class="bill-row total-row">
+            <span>Total Amount</span>
+            <span id="cartTotal" style="color:var(--primary)">$0.00</span>
+          </div>
+        </div>
+
+        <button class="checkout-btn" id="btnCheckout">
+          <span>Proceed to Checkout</span>
+          <span>➔</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Checkout Modal -->
+  <div class="modal-backdrop" id="checkoutModalBackdrop">
+    <div class="checkout-modal-content">
+      <button class="modal-close-btn" id="checkoutCloseBtn" title="Close Checkout">✕</button>
+      <h2 class="checkout-title">Complete Your Feast 🛵</h2>
+      <p class="checkout-subtitle">Fill in your delivery address to dispatch your rider.</p>
+
+      <form id="checkoutForm">
+        <div class="form-group">
+          <label class="form-label">Full Name</label>
+          <input type="text" class="form-input" required placeholder="Alex Morgan" value="Alex Morgan" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Delivery Street Address</label>
+          <input type="text" class="form-input" id="checkoutAddress" required placeholder="Apartment 4B, 742 Evergreen Terrace, Downtown" value="Apt 4B, 742 Evergreen Terrace, Downtown" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Phone Number for Rider Contact</label>
+          <input type="tel" class="form-input" id="checkoutPhone" required placeholder="+1 (555) 234-5678" value="+1 (555) 234-5678" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Drop-off Instructions (Optional)</label>
+          <input type="text" class="form-input" placeholder="e.g. Leave at door, buzz 104, contactless..." value="Leave with doorman / Ring doorbell" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Select Payment Method</label>
+          <div class="payment-methods-grid">
+            <div class="payment-option-btn active" onclick="this.parentElement.querySelectorAll('.payment-option-btn').forEach(b => b.classList.remove('active')); this.classList.add('active');">
+              <div class="pay-icon">💳</div>
+              <span>Credit Card</span>
+            </div>
+            <div class="payment-option-btn" onclick="this.parentElement.querySelectorAll('.payment-option-btn').forEach(b => b.classList.remove('active')); this.classList.add('active');">
+              <div class="pay-icon">🍏</div>
+              <span>Apple / GPay</span>
+            </div>
+            <div class="payment-option-btn" onclick="this.parentElement.querySelectorAll('.payment-option-btn').forEach(b => b.classList.remove('active')); this.classList.add('active');">
+              <div class="pay-icon">💵</div>
+              <span>Cash on Delivery</span>
+            </div>
+          </div>
+        </div>
+
+        <button type="submit" class="checkout-btn" style="width:100%">
+          <span>Place Order Now</span>
+          <span>🎉</span>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Live Order Tracker Modal -->
+  <div class="modal-backdrop" id="orderTrackerBackdrop">
+    <div class="tracker-modal-content" id="orderTrackerContent">
+      <!-- Live Tracker simulation loaded by app.js -->
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- PERSONAL RATING MODAL -->
+  <!-- ========================================================================= -->
+  <div class="modal-backdrop" id="personalRateModalBackdrop">
+    <div class="modal-content" style="max-width:540px;padding:2rem;">
+      <button class="modal-close-btn" id="personalRateCloseBtn" title="Close">✕</button>
+      <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1.25rem;">
+        <img src="" id="rateDishThumb" style="width:65px;height:65px;border-radius:var(--radius-md);object-fit:cover;" alt="Dish" />
+        <div>
+          <span class="badge badge-amber" style="font-size:0.75rem;">Personal Tasting Log</span>
+          <h3 id="rateDishTitle" style="font-size:1.15rem;margin-top:0.25rem;">Dish Name</h3>
+        </div>
+      </div>
+      
+      <!-- Interactive Star Rating Container -->
+      <div class="star-rating-container">
+        <div style="font-size:0.85rem;font-weight:700;color:#92400E;text-transform:uppercase;letter-spacing:0.5px;">Tap Stars to Set Your Personal Rate</div>
+        <div class="stars-interactive" id="rateStarsInteractive"></div>
+        <div class="star-rating-score-text" id="rateScoreDisplay">5.0 / 5.0 ⭐</div>
+      </div>
+
+      <!-- Flavor Tags Selector -->
+      <div class="form-group">
+        <label class="form-label" style="font-size:0.8rem;font-weight:700;">Flavor & Texture Highlights</label>
+        <div class="flavor-tags-wrap" id="rateFlavorTags"></div>
+      </div>
+
+      <!-- Personal Tasting Notes -->
+      <div class="form-group">
+        <label class="form-label" style="font-size:0.8rem;font-weight:700;">Your Personal Tasting Notes / Critique</label>
+        <textarea id="rateTastingNotes" class="form-input" rows="3" placeholder="How did it taste? What stood out? (e.g. Perfectly charred crust, juicy smash patty, incredible aroma...)" style="resize:vertical;"></textarea>
+      </div>
+
+      <!-- Action buttons -->
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:1.5rem;gap:1rem;">
+        <button type="button" id="btnDeleteRating" style="background:transparent;border:1px solid #FECACA;color:#DC2626;padding:0.65rem 1rem;border-radius:var(--radius-md);font-weight:600;font-size:0.85rem;cursor:pointer;display:none;">
+          Remove Rate
+        </button>
+        <button type="button" id="btnSaveRating" style="flex:1;background:var(--primary);color:#FFF;border:none;padding:0.75rem 1.5rem;border-radius:var(--radius-md);font-weight:700;cursor:pointer;">
+          Save Personal Rate ⭐
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- FOODIE SNAP / PERSONAL PHOTO UPLOAD MODAL -->
+  <!-- ========================================================================= -->
+  <div class="modal-backdrop" id="snapUploadModalBackdrop">
+    <div class="modal-content" style="max-width:560px;padding:2rem;">
+      <button class="modal-close-btn" id="snapUploadCloseBtn" title="Close">✕</button>
+      <div style="text-align:center;margin-bottom:1.5rem;">
+        <span class="badge badge-primary" style="margin-bottom:0.4rem;">Share Your Feast</span>
+        <h2 style="font-size:1.5rem;">Upload Personal Food Snap 📸</h2>
+        <p style="color:var(--text-muted);font-size:0.88rem;">Show off what you ate, log your personal rate, and inspire fellow foodies!</p>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Which Dish Did You Savor?</label>
+        <select id="snapDishSelect" class="form-input"></select>
+      </div>
+
+      <!-- File Dropzone -->
+      <div class="photo-upload-dropzone" id="snapDropzone">
+        <input type="file" id="snapFileInput" accept="image/*" style="display:none;" />
+        <span class="photo-upload-icon">📷</span>
+        <strong style="display:block;font-size:0.95rem;margin-bottom:0.25rem;">Click to upload personal photo or drag & drop</strong>
+        <span style="font-size:0.75rem;color:var(--text-muted);">Supports JPG, PNG, WebP up to 10MB</span>
+      </div>
+
+      <!-- Preview Wrap -->
+      <div class="photo-preview-wrapper" id="snapPreviewWrap">
+        <img src="" id="snapPreviewImg" class="photo-preview-img" alt="Personal Snap Preview" />
+        <button type="button" class="photo-preview-remove" id="snapPreviewRemove" title="Change photo">✕</button>
+      </div>
+
+      <!-- Star rating for snap -->
+      <div class="star-rating-container" style="margin:1.25rem 0 1rem;padding:0.85rem;">
+        <div style="font-size:0.8rem;font-weight:700;color:#92400E;">Your Personal Rating for this Bite</div>
+        <div class="stars-interactive" id="snapStarsInteractive"></div>
+        <div class="star-rating-score-text" id="snapScoreDisplay" style="font-size:0.9rem;">5.0 / 5.0 ⭐</div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Dining Vibe / Setting</label>
+        <select id="snapVibeSelect" class="form-input">
+          <option value="Chef's Table Feast 👑">Chef's Table Feast 👑</option>
+          <option value="Cozy Home Delivery 🛵">Cozy Home Delivery 🛵</option>
+          <option value="Friday Pizza Night 🍕">Friday Pizza Night 🍕</option>
+          <option value="Late Night Munchies 🌙">Late Night Munchies 🌙</option>
+          <option value="Sunday Brunch Feast ☀️">Sunday Brunch Feast ☀️</option>
+          <option value="Celebration & Cheers 🎉">Celebration & Cheers 🎉</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Caption & Tasting Notes</label>
+        <textarea id="snapCaptionInput" class="form-input" rows="3" placeholder="Tell the world why you loved it! (e.g. Smashed crispy perfection, golden fries, sauce was divine!)"></textarea>
+      </div>
+
+      <button type="button" id="btnSubmitSnap" class="checkout-btn" style="width:100%;margin-top:1rem;">
+        <span>Publish Personal Snap (+50 Coins 🪙)</span>
+        <span>➔</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- USER FOODIE SPACE / PROFILE MODAL -->
+  <!-- ========================================================================= -->
+  <div class="modal-backdrop" id="profileModalBackdrop">
+    <div class="profile-modal-content">
+      <button class="modal-close-btn" id="profileCloseBtn" title="Close">✕</button>
+
+      <!-- Profile Header Banner -->
+      <div class="profile-header-banner">
+        <div class="profile-avatar-large-wrap">
+          <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80" id="profileAvatarLarge" class="profile-avatar-large" alt="Personal Profile" />
+          <label for="profileFileInput" class="profile-avatar-overlay-btn" title="Change personal avatar photo">
+            📷 Change
+          </label>
+          <input type="file" id="profileFileInput" accept="image/*" style="display:none;" />
+        </div>
+
+        <div class="profile-user-info">
+          <div class="profile-user-name">
+            <span id="profileNameLarge">Alex Morgan</span>
+            <button onclick="window.FoodieHub.editProfileDetails()" title="Edit profile details" style="background:transparent;border:none;cursor:pointer;font-size:1.1rem;margin-left:0.35rem">✏️</button>
+          </div>
+          <div class="profile-user-title" id="profileTitleLarge">Certified Food Critic & Burger Lover</div>
+          <p class="profile-user-bio" id="profileBioLarge">Living for crispy smash burgers, wood-fired crusts, and midnight ramen bowls. Sharing authentic bites & honest rates!</p>
+        </div>
+      </div>
+
+      <!-- Stats Grid -->
+      <div class="profile-stats-grid">
+        <div class="profile-stat-card">
+          <div class="profile-stat-val" id="statRatedCount">2</div>
+          <div class="profile-stat-lbl">Dishes Rated</div>
+        </div>
+        <div class="profile-stat-card">
+          <div class="profile-stat-val" id="statAvgRate">4.9 ★</div>
+          <div class="profile-stat-lbl">Avg Rate Given</div>
+        </div>
+        <div class="profile-stat-card">
+          <div class="profile-stat-val" id="statSnapsCount">1</div>
+          <div class="profile-stat-lbl">Snaps Shared</div>
+        </div>
+        <div class="profile-stat-card">
+          <div class="profile-stat-val" id="statCoinsCount" style="color:var(--accent-amber)">350 🪙</div>
+          <div class="profile-stat-lbl">Foodie Coins</div>
+        </div>
+      </div>
+
+      <!-- Profile Tabs -->
+      <div class="profile-tabs-nav">
+        <button class="profile-tab-btn active" data-tab="tabProfileRated">⭐ My Rated Dishes</button>
+        <button class="profile-tab-btn" data-tab="tabProfileSnaps">📸 My Food Photos</button>
+        <button class="profile-tab-btn" data-tab="tabProfileFavs">❤️ Favorites</button>
+      </div>
+
+      <div class="profile-tab-pane active" id="tabProfileRated">
+        <div class="rated-items-list" id="profileRatedItemsList"></div>
+      </div>
+
+      <div class="profile-tab-pane" id="tabProfileSnaps">
+        <div id="profileSnapsList"></div>
+      </div>
+
+      <div class="profile-tab-pane" id="tabProfileFavs">
+        <div class="rated-items-list" id="profileFavsList"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Scripts -->
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
