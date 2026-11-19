@@ -67,7 +67,7 @@ CREATE TABLE IF NOT EXISTS public.newsletter_subscribers (
 );
 
 -- ============================================================================
--- Enable Row Level Security (RLS) & Policies
+-- Enable Row Level Security (RLS) & Policies (Idempotent / Safe to re-run)
 -- ============================================================================
 ALTER TABLE public.food_menu ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.orders ENABLE ROW LEVEL SECURITY;
@@ -75,27 +75,51 @@ ALTER TABLE public.order_items ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.newsletter_subscribers ENABLE ROW LEVEL SECURITY;
 
 -- food_menu policies: Anyone can view, anon can insert/update for demo
+DROP POLICY IF EXISTS "Public can view food menu" ON public.food_menu;
 CREATE POLICY "Public can view food menu" ON public.food_menu FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS "Public can insert food menu" ON public.food_menu;
 CREATE POLICY "Public can insert food menu" ON public.food_menu FOR INSERT WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Public can update food menu" ON public.food_menu;
 CREATE POLICY "Public can update food menu" ON public.food_menu FOR UPDATE USING (true);
 
 -- orders policies: Anyone can insert orders and view them
+DROP POLICY IF EXISTS "Public can create orders" ON public.orders;
 CREATE POLICY "Public can create orders" ON public.orders FOR INSERT WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Public can view orders" ON public.orders;
 CREATE POLICY "Public can view orders" ON public.orders FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS "Public can update orders status" ON public.orders;
 CREATE POLICY "Public can update orders status" ON public.orders FOR UPDATE USING (true);
 
 -- order_items policies
+DROP POLICY IF EXISTS "Public can create order items" ON public.order_items;
 CREATE POLICY "Public can create order items" ON public.order_items FOR INSERT WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Public can view order items" ON public.order_items;
 CREATE POLICY "Public can view order items" ON public.order_items FOR SELECT USING (true);
 
 -- newsletter policies
+DROP POLICY IF EXISTS "Public can subscribe to newsletter" ON public.newsletter_subscribers;
 CREATE POLICY "Public can subscribe to newsletter" ON public.newsletter_subscribers FOR INSERT WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Public can view subscribers" ON public.newsletter_subscribers;
 CREATE POLICY "Public can view subscribers" ON public.newsletter_subscribers FOR SELECT USING (true);
 
 -- ============================================================================
--- Enable Realtime for orders table
+-- Enable Realtime for orders table (Safe to re-run)
 -- ============================================================================
-ALTER PUBLICATION supabase_realtime ADD TABLE public.orders;
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_publication_tables 
+    WHERE pubname = 'supabase_realtime' AND tablename = 'orders'
+  ) THEN
+    ALTER PUBLICATION supabase_realtime ADD TABLE public.orders;
+  END IF;
+END $$;
 
 -- ============================================================================
 -- Seed Haute Luxury Menu Items

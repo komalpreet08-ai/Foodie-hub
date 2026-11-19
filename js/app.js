@@ -127,6 +127,50 @@
     renderSnaps();
     updateCartUI();
     updateProfileUI();
+    syncMenuFromSupabase();
+  }
+
+  // Live Sync Menu from Supabase Database
+  async function syncMenuFromSupabase() {
+    if (!window.supabaseClient) return;
+    try {
+      const { data, error } = await window.supabaseClient
+        .from('food_menu')
+        .select('*');
+
+      if (!error && Array.isArray(data) && data.length > 0) {
+        data.forEach(dbItem => {
+          const idx = typeof FOOD_MENU !== 'undefined' ? FOOD_MENU.findIndex(m => m.id === dbItem.id) : -1;
+          const mapped = {
+            id: dbItem.id,
+            name: dbItem.name,
+            category: dbItem.category,
+            price: parseFloat(dbItem.price),
+            originalPrice: dbItem.original_price ? parseFloat(dbItem.original_price) : null,
+            rating: parseFloat(dbItem.rating || 4.9),
+            reviewsCount: dbItem.reviews_count || 100,
+            prepTime: dbItem.prep_time || '20 min',
+            calories: dbItem.calories || '600 kcal',
+            isVeg: !!dbItem.is_veg,
+            badge: dbItem.badge || '',
+            image: dbItem.image,
+            description: dbItem.description || '',
+            ingredients: Array.isArray(dbItem.ingredients) ? dbItem.ingredients : [],
+            addons: Array.isArray(dbItem.addons) ? dbItem.addons : []
+          };
+          if (idx >= 0) {
+            FOOD_MENU[idx] = mapped;
+          } else if (typeof FOOD_MENU !== 'undefined') {
+            FOOD_MENU.push(mapped);
+          }
+        });
+        updateCategoryCounts();
+        renderMenu();
+        console.log(`✅ Loaded ${data.length} dishes from live Supabase food_menu!`);
+      }
+    } catch (err) {
+      console.warn('Supabase menu sync skipped:', err);
+    }
   }
 
   // Load cart, favorites, personal ratings, snaps & user profile from localStorage
@@ -1258,18 +1302,163 @@
     if (elements.checkoutModalBackdrop) elements.checkoutModalBackdrop.classList.add('open');
   }
 
+  // Sync new Order and Items to Supabase
+  async function syncOrderToSupabase(orderRecord, items) {
+    if (!window.supabaseClient) {
+      console.warn('Supabase client not initialized; skipping cloud order sync.');
+      return;
+    }
+    try {
+      const { data: orderData, error: orderErr } = await window.supabaseClient
+        .from('orders')
+        .insert([{
+          order_number: orderRecord.orderNumber,
+          customer_name: orderRecord.customerName,
+          delivery_address: orderRecord.deliveryAddress,
+          phone: orderRecord.phone,
+          dropoff_notes: orderRecord.dropoffNotes,
+          payment_method: orderRecord.paymentMethod,
+          subtotal: orderRecord.subtotal,
+          delivery_fee: orderRecord.deliveryFee,
+          tax: orderRecord.tax,
+          discount: orderRecord.discount,
+          total_amount: orderRecord.totalAmount,
+          status: 'confirmed'
+        }])
+        .select()
+        .single();
+
+      if (orderErr) {
+        console.error('Supabase error inserting order:', orderErr);
+        return;
+      }
+
+      if (orderData && items && items.length > 0) {
+        const orderItemsPayload = items.map(it => ({
+          order_id: orderData.id,
+          food_item_id: it.id || null,
+          name: it.name,
+          unit_price: parseFloat(it.unitPrice) || 0,
+          quantity: it.qty || 1,
+          addons: Array.isArray(it.selectedAddons) ? it.selectedAddons : [],
+          notes: it.notes || ''
+        }));
+
+        const { error: itemsErr } = await window.supabaseClient
+          .from('order_items')
+          .insert(orderItemsPayload);
+
+        if (itemsErr) {
+          console.error('Supabase error inserting order items:', itemsErr);
+        } else {
+          console.log(`✅ Order #${orderRecord.orderNumber} and items synced to Supabase!`);
+        }
+      }
+    } catch (err) {
+      console.error('Supabase sync order exception:', err);
+    }
+  }
+
+  // Update Order Status in Supabase as live tracker progresses
+  async function updateOrderStatusInSupabase(orderNumber, stage) {
+    if (!window.supabaseClient || !orderNumber) return;
+    const statusMap = { 1: 'confirmed', 2: 'preparing', 3: 'on_the_way', 4: 'delivered' };
+    const newStatus = statusMap[stage] || 'confirmed';
+    try {
+      await window.supabaseClient
+        .from('orders')
+        .update({ status: newStatus, updated_at: new Date().toISOString() })
+        .eq('order_number', orderNumber);
+      console.log(`✅ Order #${orderNumber} status updated to '${newStatus}' in Supabase`);
+    } catch (err) {
+      console.warn('Supabase status update error:', err);
+    }
+  }
+
+  // Newsletter Subscription to Supabase
+  async function handleNewsletterSubscribe() {
+    const input = document.getElementById('newsletterEmail');
+    if (!input) return;
+    const em = input.value ? input.value.trim() : '';
+    if (em && em.includes('@')) {
+      showToast('Subscribed! Check your inbox for $10 voucher 🎁');
+      input.value = '';
+      if (window.supabaseClient) {
+        try {
+          const { error } = await window.supabaseClient
+            .from('newsletter_subscribers')
+            .insert([{ email: em }]);
+          if (error && error.code !== '23505') {
+            console.warn('Supabase newsletter error:', error);
+          } else {
+            console.log('✅ Newsletter subscriber recorded in Supabase!');
+          }
+        } catch (err) {
+          console.warn('Newsletter sync exception:', err);
+        }
+      }
+    } else {
+      showToast('Please enter a valid email address!');
+    }
+  }
+
   function handlePlaceOrder(e) {
     e.preventDefault();
     const orderNumber = 'FH-' + Math.floor(100000 + Math.random() * 900000);
     const subtotal = state.cart.reduce((sum, item) => sum + (item.unitPrice * item.qty), 0);
+    let deliveryFee = subtotal >= state.freeDeliveryThreshold ? 0.00 : state.deliveryFeeBase;
+    const tax = subtotal * state.taxRate;
+    let discount = 0.00;
+    if (state.appliedPromo) {
+      if (state.appliedPromo.type === 'percent') {
+        discount = Math.min(state.appliedPromo.maxCap, subtotal * (state.appliedPromo.value / 100));
+      } else if (state.appliedPromo.type === 'flat') {
+        discount = state.appliedPromo.value;
+      } else if (state.appliedPromo.type === 'delivery') {
+        discount = deliveryFee;
+        deliveryFee = 0.00;
+      }
+    }
+    const finalTotal = Math.max(0, subtotal + deliveryFee + tax - discount);
+
+    // Extract checkout form values
+    const nameInput = elements.checkoutForm ? elements.checkoutForm.querySelector('input[type="text"]') : null;
+    const customerName = (nameInput && nameInput.value.trim()) ? nameInput.value.trim() : (state.userProfile.name || 'Alex Morgan');
+    const addrInput = document.getElementById('checkoutAddress');
+    const deliveryAddress = (addrInput && addrInput.value.trim()) ? addrInput.value.trim() : 'Downtown, 5th Avenue';
+    const phoneInput = document.getElementById('checkoutPhone');
+    const phone = (phoneInput && phoneInput.value.trim()) ? phoneInput.value.trim() : '+1 (555) 234-5678';
+    const allTextInputs = elements.checkoutForm ? elements.checkoutForm.querySelectorAll('input[type="text"]') : [];
+    const dropoffNotes = (allTextInputs.length > 1 && allTextInputs[1].value.trim()) ? allTextInputs[1].value.trim() : '';
+    const activePayBtn = elements.checkoutForm ? elements.checkoutForm.querySelector('.payment-option-btn.active span') : null;
+    const paymentMethod = activePayBtn ? activePayBtn.textContent.trim() : 'Credit Card';
+
+    const orderRecord = {
+      orderNumber,
+      customerName,
+      deliveryAddress,
+      phone,
+      dropoffNotes,
+      paymentMethod,
+      subtotal: parseFloat(subtotal.toFixed(2)),
+      deliveryFee: parseFloat(deliveryFee.toFixed(2)),
+      tax: parseFloat(tax.toFixed(2)),
+      discount: parseFloat(discount.toFixed(2)),
+      totalAmount: parseFloat(finalTotal.toFixed(2))
+    };
+
+    const orderedItems = state.cart.slice();
 
     state.activeOrder = {
       orderNumber,
-      items: state.cart.slice(),
-      total: elements.cartTotal ? elements.cartTotal.textContent : `$${subtotal.toFixed(2)}`,
+      items: orderedItems,
+      total: elements.cartTotal ? elements.cartTotal.textContent : `$${finalTotal.toFixed(2)}`,
       createdAt: new Date(),
       stage: 1
     };
+
+    // Save order asynchronously to Supabase cloud database
+    syncOrderToSupabase(orderRecord, orderedItems);
 
     // Clear Cart
     state.cart = [];
@@ -1309,6 +1498,7 @@
       if (state.activeOrder.stage < 4) {
         state.activeOrder.stage += 1;
         renderOrderTrackerHTML();
+        updateOrderStatusInSupabase(state.activeOrder.orderNumber, state.activeOrder.stage);
         if (state.activeOrder.stage === 4) {
           clearInterval(state.orderTrackerInterval);
           showToast('Ding-dong! Your Foodie Hub feast has arrived! 🎉😋');
@@ -1657,7 +1847,8 @@
     likeSnap,
     deleteSnap,
     editProfileDetails,
-    showToast
+    showToast,
+    handleNewsletterSubscribe
   };
 
   // Run on DOM ready

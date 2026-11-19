@@ -525,15 +525,7 @@
           <p style="font-size:0.85rem;color:#94A3B8">Subscribe to receive exclusive 40% OFF weekend promo codes directly in your inbox.</p>
           <div class="newsletter-box">
             <input type="email" placeholder="Enter your email address" id="newsletterEmail" />
-            <button onclick="
-              const em = document.getElementById('newsletterEmail').value;
-              if (em && em.includes('@')) {
-                window.FoodieHub.showToast('Subscribed! Check your inbox for $10 voucher 🎁');
-                document.getElementById('newsletterEmail').value = '';
-              } else {
-                window.FoodieHub.showToast('Please enter a valid email address!');
-              }
-            ">Join</button>
+            <button onclick="window.FoodieHub.handleNewsletterSubscribe()">Join</button>
           </div>
         </div>
       </div>
@@ -860,6 +852,8 @@
   <div class="toast-container" id="toastContainer"></div>
 
   <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabaseClient.js"></script>
   <script src="data.js"></script>
   <script src="app.js"></script>
 </body>
